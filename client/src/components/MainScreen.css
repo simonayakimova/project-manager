@@ -12,19 +12,32 @@
 .todo{
     background-color:lightblue;
     width: 30%;
-    height: 400px;
+    height:auto;
+    min-height:30px;
+    height:auto !important;        /* for IE as it does not support min-height */
+    height:30px;  
+    overflow: scroll;
+
 }
 
 .doing{
     background-color: green;
     width: 30%;
-    height: 400px;
+    height:auto;
+    min-height:30px;
+    height:auto !important;        /* for IE as it does not support min-height */
+    height:30px;  
+    overflow: scroll;
 }
 
 .done{
     background-color: pink;
     width: 30%;
-    height: 400px;
+    height:auto;
+    min-height:30px;
+    height:auto !important;        /* for IE as it does not support min-height */
+    height:30px;  
+    overflow: scroll;
 }
 
 .createTaskDiv{
@@ -96,4 +109,14 @@ label{
 .description {
     font-family: 'Times New Roman', Times, serif;
     font-size: 2em;
+    
 }
+ul {
+    list-style: none;
+    margin:0;
+    padding:0
+  }
+  li {
+    padding: 5px;
+    background:#eee
+  }

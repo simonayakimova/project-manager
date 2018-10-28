@@ -9,8 +9,8 @@ import {
 import './App.css';
 import Public from './components/Public';
 // import Private from './components/Private';
-import Tasks from './components/Tasks'
-import TestTask from './components/TestTask'
+// import Tasks from './components/Tasks'
+import Task from './components/MainScreen'
 
 
 class Login extends React.Component {
@@ -40,15 +40,14 @@ class Login extends React.Component {
   })
   .then(user => {
     for (let i = 0; i < user.length; i++) {
-      if (user[i].userEmail == this.state.email && user[i].password == this.state.password) {
+      if (user[i].userEmail === this.state.email && user[i].password === this.state.password) {
         this.setState({ currentUser: this.state.email})
-        
           AuthService.authenticate(() => {
             this.setState({ redirectToPreviousRoute: true });
           });
       }
       else {
-        console.log("Please try again")
+
       }
     }
   })
@@ -143,7 +142,7 @@ class App extends Component {
 
             <Route path='/public' component={Public} />
             <Route path="/login" component={Login} />
-            <SecretRoute path='/private' component={TestTask} />
+            <SecretRoute path='/private' component={Task} />
           </div>
         </Router>
       </div>

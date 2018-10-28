@@ -43,13 +43,15 @@ MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, func
 })
 
 
-app.put('/api/editTasks', function (req, res) {
+
+app.put('/api/editDescription', function (req, res) {
   var changeTask = req.body
+  console.dir(changeTask)
+  let id = parseInt(changeTask.id)
   console.log(changeTask)
     app.get('myDb').collection('toDoTasks').updateOne(
-      // {"user":"user1"},
+      {"id": id},
       {$set: {
-          "task": changeTask.task,
           "description": changeTask.description
       }
       },
@@ -64,7 +66,53 @@ app.put('/api/editTasks', function (req, res) {
           }
       })
 })
-  
+
+app.put('/api/editTitle', function (req, res) {
+  var changeTask = req.body
+  console.dir(changeTask)
+  let id = parseInt(changeTask.id)
+  console.log(changeTask)
+    app.get('myDb').collection('toDoTasks').updateOne(
+      {"id": id},
+      {$set: {
+          "title": changeTask.title
+      }
+      },
+      function (err,dbResp) {
+          if (err) {
+              console.error(err)
+          }
+          if (dbResp.modifiedCount === 1) {
+              res.json({ msg: "Successfully Amended"})
+          } else {
+              res.json({msg: "Not Found"})
+          }
+      })
+})
+
+app.put('/api/editType', function (req, res) {
+  var changeTask = req.body
+  console.dir(changeTask)
+  let id = parseInt(changeTask.id)
+  console.log(changeTask)
+    app.get('myDb').collection('toDoTasks').updateOne(
+      {"id": id},
+      {$set: {
+          "type": changeTask.type
+      }
+      },
+      function (err,dbResp) {
+          if (err) {
+              console.error(err)
+          }
+          if (dbResp.modifiedCount === 1) {
+              res.json({ msg: "Successfully Amended"})
+          } else {
+              res.json({msg: "Not Found"})
+          }
+      })
+})
+
 
 
 
@@ -85,6 +133,26 @@ app.get('/api/logout', function (req, res) {
 app.get('/api/getTasks', (req, res) => {
 
   app.get('myDb').collection('toDoTasks').find({}).toArray(function (err, docs) {
+    if (err) {
+      console.error(err)
+    }
+    res.json(docs)
+  })
+});
+
+app.get('/api/getTasksDoing', (req, res) => {
+
+  app.get('myDb').collection('doingTasks').find({}).toArray(function (err, docs) {
+    if (err) {
+      console.error(err)
+    }
+    res.json(docs)
+  })
+});
+
+app.get('/api/getLastId', (req, res) => {
+
+  app.get('myDb').collection('toDoTasks').find({}).limit(1).sort({$natural:-1}).toArray(function (err, docs) {
     if (err) {
       console.error(err)
     }
