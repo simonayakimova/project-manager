@@ -39,15 +39,15 @@ class Login extends React.Component {
       return response.json()
   })
   .then(user => {
-    for (let i = 0; i < user.length; i++) {
-      if (user[i].userEmail === this.state.email && user[i].password === this.state.password) {
+    for (let i = 0; i <user.length; i++) {
+      if (user[i].userEmail == this.state.email && user[i].password == this.state.password) {
         this.setState({ currentUser: this.state.email})
           AuthService.authenticate(() => {
             this.setState({ redirectToPreviousRoute: true });
           });
       }
       else {
-
+        console.log("wrong")
       }
     }
   })
@@ -65,22 +65,22 @@ class Login extends React.Component {
 
     return (
       <div className="form-group">
-        <p>You must log in to view the page at {from.pathname}</p>
+        <p>You must log in to view this page</p>
         <form onSubmit={this.login} >
-        <input
+        Email: <input
           className="form-control"
           id="userEmail"
           type="email"
           placeholder="email"
           onChange={event => this.setState({ email: event.target.value })}
-        />
-        <input
+        /><br></br>
+        Password: <input
           className="form-control"
           id="userPassword"
           type="password"
           placeholder="password"
           onChange={event => this.setState({ password: event.target.value })}
-        />
+        /><br></br>
         <input type="submit"/>
         </form>
       </div>

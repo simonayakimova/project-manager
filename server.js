@@ -44,6 +44,7 @@ MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, func
 
 
 
+
 app.put('/api/editDescription', function (req, res) {
   var changeTask = req.body
   console.dir(changeTask)
@@ -140,15 +141,27 @@ app.get('/api/getTasks', (req, res) => {
   })
 });
 
-app.get('/api/getTasksDoing', (req, res) => {
 
-  app.get('myDb').collection('doingTasks').find({}).toArray(function (err, docs) {
-    if (err) {
-      console.error(err)
-    }
-    res.json(docs)
-  })
-});
+app.delete('/api/deleteDone', function (req, res) {
+    var removeTask = req.body;
+    var id = parseInt(removeTask.id);
+    app.get('myDb').collection("toDoTasks").deleteOne(
+        { "id": id },
+        function (err, dbResp) {
+            if (err) {
+                console.error(err)
+            }
+            if (dbResp.deletedCount === 1) {
+                res.json({ msg: "Successfully Removed" })
+            } else {
+                res.json({ msg: "Not Found" })
+            }
+        })
+  }
+)
+
+
+
 
 app.get('/api/getLastId', (req, res) => {
 
@@ -200,18 +213,6 @@ app.post('/api/signUp', (req, res) => {
   })
 
 })
-
-// app.post('/login',
-//   passport.authenticate('local'),
-//   function(req, res) {
-//     // If this function gets called, authentication was successful.
-//     // `req.user` contains the authenticated user.
-//     res.redirect('/users/' + req.user.username);
-//   });
-
-//   app.post('/login',
-//   passport.authenticate('local', { successRedirect: '/',
-//                                    failureRedirect: '/login' }));
 
 
 const port = 5000;

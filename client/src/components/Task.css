@@ -1,7 +1,21 @@
 .containerTask{
     background-color: white;
+    font-family: 'Gudea', sans-serif;
     color: black;
-    border: 1px;
+    border: 1px solid #cdd3d7;
+    border-radius: 4px;
     margin: 5px; 
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+ 
+}
+.deleteButt {
+    background: grey;
+    width:10%;
 }
 
+h3{
+    font-weight:normal;
+    font-size: 1.5em;
+}
