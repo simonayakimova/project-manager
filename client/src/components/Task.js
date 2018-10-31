@@ -11,14 +11,15 @@ class Task extends Component {
         this.state = {
             descriptonPrevious: this.props.description,
             titlePrevious: this.props.title,
-            assignedToPrevious: this.props.assignedTo
+            assignedToPrevious: this.props.assignedTo,
+            project: this.props.project
 
         }
 
         this.descriptionChanged = this.descriptionChanged.bind(this)
         this.titleChanged = this.titleChanged.bind(this)
         this.handleDelete = this.handleDelete.bind(this)
-    
+
 
     }
 
@@ -26,7 +27,7 @@ class Task extends Component {
         console.log(this.state)
     }
 
-  
+
     descriptionChanged(task) {
         this.setState({
             descriptonPrevious: task.description
@@ -108,6 +109,14 @@ class Task extends Component {
 
     }
 
+    handleMore() {
+        document.getElementById("modalMore").style.display = "block"
+
+    }
+    close() {
+        document.getElementById("modalMore").style.display = "none"
+    }
+
     render() {
         if (this.props.type === "DONE") {
             return (
@@ -128,7 +137,7 @@ class Task extends Component {
                         change={this.descriptionChanged}
                         propName='description'
                         validate={_.isString} />
-                        <br></br>
+                    <br></br>
 
                     {/* Assigned to: <RIEInput
                         value={this.state.assignedToPrevious}
@@ -139,6 +148,23 @@ class Task extends Component {
 
                     Assigned to: {this.props.assignedTo}
 
+                    <div>
+
+                        <div className="createTaskDiv">
+                            <button id="moreBtn" onClick={this.handleMore}>More</button>
+                            <div className="popUpForm" id="modalMore">
+                                <div className="modal-content">
+                                <p>Hello</p>
+                                    <span className="close" onClick={this.close}>&times;</span>
+                                    
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
                 </div>
             )
         }
@@ -146,6 +172,8 @@ class Task extends Component {
 
         return (
             <div className="containerTask">
+
+
                 <h3 className="title">
                     <RIEInput
                         value={this.state.titlePrevious}
@@ -166,8 +194,22 @@ class Task extends Component {
                     propName="assignedTo"
                     validate={_.isString} /> */}
 
-                    Assigned to: {this.props.assignedTo}
+                Assigned to: {this.props.assignedTo}
 
+
+                <div>
+
+                    <div className="createTaskDiv">
+                        <button id="moreBtn" onClick={this.handleMore}>More</button>
+                        <div className="popUpForm" id="modalMore">
+                            <div className="modal-content">
+                                <span className="close" onClick={this.close}>&times;</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
             </div>
         )
     }

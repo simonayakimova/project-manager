@@ -4,6 +4,7 @@ import './MainScreen.css'
 import Task from './Task.js'
 
 
+
 class MainScreen extends Component {
 
     constructor(props) {
@@ -16,7 +17,10 @@ class MainScreen extends Component {
             tasksDone: [],
             description: '',
             type: "TODO",
-            assignedTo: ''
+            assignedTo: 'Mark',
+            project: 'myProject',
+            createdAt: '',
+            selectedProject: 'myProject'
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleCreate = this.handleCreate.bind(this)
@@ -29,6 +33,8 @@ class MainScreen extends Component {
         this.handleTypeSelection = this.handleTypeSelection.bind(this)
         this.handleDelete = this.handleDelete.bind(this)
         this.assign = this.assign.bind(this)
+        this.projectSelect = this.projectSelect.bind(this)
+        this.toggleProject = this.toggleProject.bind(this)
     }
 
     handleCreate() {
@@ -43,18 +49,107 @@ class MainScreen extends Component {
         this.setState({
             assignedTo: event.target.value
         })
+
+    }
+
+    projectSelect(event) {
+        this.setState({
+            project: event.target.value
+
+        })
+        console.log(this.state.selectedProject)
+
+    }
+
+    toggleProject(event) {
+        this.setState({
+            selectedProject: event.target.value
+        })
+         console.log(this.state.selectedProject)
+
+         if(this.state.selectedProject == "myProject") {
+            fetch('/api/getTasks', {
+                method: 'get',
+
+            })
+                .then(function (response) {
+                    return response.json()
+                })
+                .then(task => {
+                    let tasksToDo = []
+                    let tasksDoing = []
+                    let tasksDone = []
+                    for (let i = 0; i < task.length; i++) {
+                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
+                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
+                        if (task[i].type === "TODO") {
+                            tasksToDo.push(task[i])
+                        }
+                        if (task[i].type === "DOING") {
+                            tasksDoing.push(task[i])
+                        }
+                        if (task[i].type === "DONE") {
+                            tasksDone.push(task[i])
+                        }
+                    }
+                    // }
+                    this.setState({
+                        tasks: tasksToDo,
+                        tasksDoing: tasksDoing,
+                        tasksDone: tasksDone
+                    })
+                })
         
+
+         } else {
+             console.log(2)
+             fetch('/api/getTasksSecond', {
+                method: 'get',
+
+            })
+                .then(function (response) {
+                    return response.json()
+                })
+                .then(task => {
+                    let tasksToDo = []
+                    let tasksDoing = []
+                    let tasksDone = []
+                    for (let i = 0; i < task.length; i++) {
+                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
+                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
+                        if (task[i].type === "TODO") {
+                            tasksToDo.push(task[i])
+                        }
+                        if (task[i].type === "DOING") {
+                            tasksDoing.push(task[i])
+                        }
+                        if (task[i].type === "DONE") {
+                            tasksDone.push(task[i])
+                        }
+                    }
+                    // }
+                    this.setState({
+                        tasks: tasksToDo,
+                        tasksDoing: tasksDoing,
+                        tasksDone: tasksDone
+                    })
+                })
+        
+         }
     }
 
     handleSubmit(ev) {
+
         ev.preventDefault()
         document.getElementById("modal").style.display = "none"
+        const date = new Date
 
         this.setState({
             task: ' ',
             id: this.state.id + 1,
             description: ' ',
-            assignedTo: ''
+            assignedTo: '',
+            createdAt: date
         })
 
 
@@ -63,7 +158,9 @@ class MainScreen extends Component {
             "task": this.state.task,
             "description": this.state.description,
             "type": this.state.type,
-            "assignedTo": this.state.assignedTo
+            "assignedTo": this.state.assignedTo,
+            "project": this.state.project,
+            "createdAt": this.state.createdAt
         }
 
 
@@ -85,9 +182,10 @@ class MainScreen extends Component {
                 return Promise.reject("Invalid Note");
             })
 
+        // if (this.state.selectedProject == "myProject") {
             fetch('/api/getTasks', {
                 method: 'get',
-    
+
             })
                 .then(function (response) {
                     return response.json()
@@ -97,6 +195,8 @@ class MainScreen extends Component {
                     let tasksDoing = []
                     let tasksDone = []
                     for (let i = 0; i < task.length; i++) {
+                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
+                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
                         if (task[i].type === "TODO") {
                             tasksToDo.push(task[i])
                         }
@@ -107,15 +207,20 @@ class MainScreen extends Component {
                             tasksDone.push(task[i])
                         }
                     }
+                    // }
                     this.setState({
                         tasks: tasksToDo,
                         tasksDoing: tasksDoing,
                         tasksDone: tasksDone
                     })
                 })
+        
     }
 
     componentDidMount() {
+
+        console.log(this.state.selectedProject)
+        console.log(new Date)
 
         fetch('/api/getLastId', {
             method: 'get',
@@ -162,12 +267,12 @@ class MainScreen extends Component {
                     tasksDone: tasksDone
                 })
             })
-            
-           
+
+
     }
 
 
-    handleTypeSelection(event){
+    handleTypeSelection(event) {
         this.setState({
             type: event.target.value
         })
@@ -185,16 +290,16 @@ class MainScreen extends Component {
 
         for (let i = 0; i < array.length; i++) {
             if (array[i].id == ev.dataTransfer.getData("id")) {
-                array[i].type=="DOING"
+                array[i].type == "DOING"
                 newArray.push(array[i])
-                
+
                 let newType = {
                     "id": array[i].id,
-                    "type" : "DOING"
+                    "type": "DOING"
                 }
-            
+
                 let endPoint = '/api/editType'
-            
+
                 fetch(endPoint, {
                     method: 'put',
                     body: JSON.stringify(newType),
@@ -209,7 +314,7 @@ class MainScreen extends Component {
                         return Promise.reject("Invalid Note");
                     })
 
-                    array.splice(i, 1)
+                array.splice(i, 1)
             }
         }
 
@@ -231,17 +336,17 @@ class MainScreen extends Component {
 
         for (let i = 0; i < array.length; i++) {
             if (array[i].id == ev.dataTransfer.getData("id")) {
-                array[i].type=="DONE"
+                array[i].type == "DONE"
                 newArray.push(array[i])
-                
+
 
                 let newType = {
                     "id": array[i].id,
-                    "type" : "DONE"
+                    "type": "DONE"
                 }
-            
+
                 let endPoint = '/api/editType'
-            
+
                 fetch(endPoint, {
                     method: 'put',
                     body: JSON.stringify(newType),
@@ -256,7 +361,7 @@ class MainScreen extends Component {
                         return Promise.reject("Invalid Note");
                     })
 
-                    array.splice(i, 1)
+                array.splice(i, 1)
             }
         }
 
@@ -299,11 +404,10 @@ class MainScreen extends Component {
         ev.preventDefault()
     }
 
-    handleDelete(id){
-        console.log("eho")
-       let array = this.state.tasksDone
-        for(let i=0; i<array.length; i++){
-            if(array[i].id===id){
+    handleDelete(id) {
+        let array = this.state.tasksDone
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].id === id) {
                 array.splice(i, 1)
                 this.setState({
                     tasksDone: array
@@ -322,8 +426,9 @@ class MainScreen extends Component {
                             <span className="close" onClick={this.close}>&times;</span>
                             <form onSubmit={this.handleSubmit}>
                                 <label htmlFor="myProject"> Project name: </label>
-                                <select>
+                                <select value={this.state.project} onChange={this.projectSelect}>
                                     <option value="myProject">My Project</option>
+                                    <option value="mySecondProject">My second project</option>
                                 </select><br></br>
                                 <label htmlFor="createTask">Task: </label>
                                 <textarea
@@ -347,7 +452,7 @@ class MainScreen extends Component {
                                 </select><br></br>
                                 <label>Assign to: </label>
                                 <select value={this.state.assignedTo} onChange={this.assign}>
-                                    <option selected disabled selected value> Select someone</option>
+                                    <option disabled> Select someone</option>
                                     <option value="Mike">Mike</option>
                                     <option value="Tim">Tim</option>
                                     <option value="John">John</option>
@@ -359,7 +464,16 @@ class MainScreen extends Component {
                     </div>
                 </div>
 
+                <div className="projectSelect">
+                    <label className="selectLabel">Project:</label>
+                    <select value={this.state.selectedProject} onChange={this.toggleProject}>
+                        <option value="myProject">My Project</option>
+                        <option value="mySecondProject">My Second Project</option>
+                    </select><br></br>
+                </div>
+
                 <div className="container">
+
                     <div className="todo">
                         <h3>To do: {this.state.tasks.length}</h3>
                         {this.state.tasks.map(task => {
@@ -373,7 +487,7 @@ class MainScreen extends Component {
                                     title={task.task}
                                     description={task.description}
                                     assignedTo={task.assignedTo}
-                                     />
+                                />
                             </div>)
 
                         })}
@@ -392,7 +506,7 @@ class MainScreen extends Component {
                                     title={task.task}
                                     description={task.description}
                                     assignedTo={task.assignedTo}
-                                     />
+                                />
                             </div>
                         ))}
 
@@ -411,9 +525,9 @@ class MainScreen extends Component {
                                     type={task.type}
                                     id={task.id}
                                     title={task.task}
-                                    description={task.description} 
+                                    description={task.description}
                                     assignedTo={task.assignedTo}
-                                    />
+                                />
                             </div>
                         ))}
 

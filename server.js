@@ -133,7 +133,17 @@ app.get('/api/logout', function (req, res) {
 
 app.get('/api/getTasks', (req, res) => {
 
-  app.get('myDb').collection('toDoTasks').find({}).toArray(function (err, docs) {
+  app.get('myDb').collection('toDoTasks').find({"project":"myProject"}).toArray(function (err, docs) {
+    if (err) {
+      console.error(err)
+    }
+    res.json(docs)
+  })
+});
+
+app.get('/api/getTasksSecond', (req, res) => {
+
+  app.get('myDb').collection('toDoTasks').find({"project":"mySecondProject"}).toArray(function (err, docs) {
     if (err) {
       console.error(err)
     }

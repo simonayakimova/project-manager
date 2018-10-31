@@ -48,6 +48,7 @@ class Login extends React.Component {
       }
       else {
         console.log("wrong")
+        
       }
     }
   })
@@ -126,6 +127,13 @@ const AuthStatus = withRouter(({ history }) => (
 ));
 
 class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isAuthenticated: false
+    }
+  }
+  
   render() {
     return (
       <div className="App">
@@ -134,13 +142,13 @@ class App extends Component {
             <AuthStatus />
             <nav>
               <ul className="navUl">
-                <li><Link to='/public'> Public </Link></li>
+                <li><Link to='/home'> Home </Link></li>
                 <li><Link to='/private'> Board </Link></li>
               </ul>
             </nav>
             <hr />
 
-            <Route path='/public' component={Public} />
+            <Route path='/home' component={Public} />
             <Route path="/login" component={Login} />
             <SecretRoute path='/private' component={Task} />
           </div>
