@@ -154,9 +154,9 @@ class Task extends Component {
                             <button id="moreBtn" onClick={this.handleMore}>More</button>
                             <div className="popUpForm" id="modalMore">
                                 <div className="modal-content">
-                                <p>Hello</p>
+
                                     <span className="close" onClick={this.close}>&times;</span>
-                                    
+
                                 </div>
                             </div>
 
@@ -203,6 +203,11 @@ class Task extends Component {
                         <button id="moreBtn" onClick={this.handleMore}>More</button>
                         <div className="popUpForm" id="modalMore">
                             <div className="modal-content">
+                            <label>Comments: </label>
+                            <textarea
+                            placeholder = "enter comments"
+                            ></textarea>
+
                                 <span className="close" onClick={this.close}>&times;</span>
                             </div>
                         </div>
