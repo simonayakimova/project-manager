@@ -42,14 +42,58 @@ MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, func
 
 })
 
+app.put('/api/addComments', function (req, res) {
+  var newComment = req.body
+  let id = parseInt(newComment.id)
 
+  app.get('myDb').collection('toDoTasks').updateOne(
+    {"id": id},
+    {$set: {
+        "comments": newComment.comments
+    }
+    },
+    function (err,dbResp) {
+        if (err) {
+            console.error(err)
+        }
+        if (dbResp.modifiedCount === 1) {
+            res.json({ msg: "Successfully Amended"})
+        } else {
+            res.json({msg: "Not Found"})
+        }
+    })
+
+
+})
+
+app.put('/api/addBlocker', function (req, res) {
+  var isBlocked = req.body
+  let id = parseInt(isBlocked.id)
+
+  app.get('myDb').collection('toDoTasks').updateOne(
+    {"id": id},
+    {$set: {
+        "isBlocked": isBlocked.isBlocked
+    }
+    },
+    function (err,dbResp) {
+        if (err) {
+            console.error(err)
+        }
+        if (dbResp.modifiedCount === 1) {
+            res.json({ msg: "Successfully Amended"})
+        } else {
+            res.json({msg: "Not Found"})
+        }
+    })
+
+})
 
 
 app.put('/api/editDescription', function (req, res) {
   var changeTask = req.body
-  console.dir(changeTask)
   let id = parseInt(changeTask.id)
-  console.log(changeTask)
+  
     app.get('myDb').collection('toDoTasks').updateOne(
       {"id": id},
       {$set: {
@@ -131,9 +175,13 @@ app.get('/api/logout', function (req, res) {
   });
 });
 
-app.get('/api/getTasks', (req, res) => {
 
-  app.get('myDb').collection('toDoTasks').find({"project":"myProject"}).toArray(function (err, docs) {
+app.put('/api/getTasks', function (req, res) {
+// app.get('/api/getTasks', (req, res) => {
+
+  project = req.body.project
+
+  app.get('myDb').collection('toDoTasks').find({"project":project}).toArray(function (err, docs) {
     if (err) {
       console.error(err)
     }
@@ -141,15 +189,6 @@ app.get('/api/getTasks', (req, res) => {
   })
 });
 
-app.get('/api/getTasksSecond', (req, res) => {
-
-  app.get('myDb').collection('toDoTasks').find({"project":"mySecondProject"}).toArray(function (err, docs) {
-    if (err) {
-      console.error(err)
-    }
-    res.json(docs)
-  })
-});
 
 
 app.delete('/api/deleteDone', function (req, res) {

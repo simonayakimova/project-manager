@@ -1,3 +1,7 @@
+// ADD a blocked symbol to tasks + ability to assign it
+
+
+
 import React, { Component } from 'react';
 import "./Task.css"
 
@@ -12,13 +16,17 @@ class Task extends Component {
             descriptonPrevious: this.props.description,
             titlePrevious: this.props.title,
             assignedToPrevious: this.props.assignedTo,
-            project: this.props.project
-
+            project: this.props.project,
+            comments: this.props.comments,
+            complexity: this.props.complexity,
+            isBlocked: this.props.isBlocked
         }
 
         this.descriptionChanged = this.descriptionChanged.bind(this)
         this.titleChanged = this.titleChanged.bind(this)
         this.handleDelete = this.handleDelete.bind(this)
+        this.addMore = this.addMore.bind(this)
+        this.blocked = this.blocked.bind(this)
 
 
     }
@@ -27,6 +35,83 @@ class Task extends Component {
         console.log(this.state)
     }
 
+
+    blocked(ev) {
+        ev.preventDefault()
+
+        document.getElementById("modalMore").style.display = "none"
+
+
+        this.setState({
+            isBlocked: true
+        })
+
+        console.log(this.state.isBlocked)
+        let addBlocker = {
+            "id": this.props.id,
+            "isBlocked": this.state.isBlocked
+        }
+
+        console.log(addBlocker.id)
+        console.log(addBlocker.isBlocked)
+
+        let endPoint = '/api/addBlocker'
+
+        fetch(endPoint, {
+            method: 'put',
+            body: JSON.stringify(addBlocker),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json()
+                }
+                return Promise.reject("Invalid");
+            })
+
+        
+
+
+    }
+
+    // not working
+    addMore(ev) {
+
+        console.log(this.state.comments)
+
+        ev.preventDefault()
+
+        document.getElementById("modalMore").style.display = "none"
+        // this.setState({
+        //     comments: task.comments
+        // })
+        let newComment = {
+            "id": this.props.id,
+            "comments": this.state.comments
+        }
+
+        console.log(newComment.comments)
+        console.log(newComment.id)
+
+        let endPoint = '/api/addComments'
+
+        fetch(endPoint, {
+            method: 'put',
+            body: JSON.stringify(newComment),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json()
+                }
+                return Promise.reject("Invalid");
+            })
+
+    }
 
     descriptionChanged(task) {
         this.setState({
@@ -51,7 +136,7 @@ class Task extends Component {
                 if (response.ok) {
                     return response.json()
                 }
-                return Promise.reject("Invalid Note");
+                return Promise.reject("Invalid");
             })
     }
 
@@ -148,15 +233,29 @@ class Task extends Component {
 
                     Assigned to: {this.props.assignedTo}
 
+                    <i className="complexity">{this.props.complexity}</i>
+
                     <div>
 
                         <div className="createTaskDiv">
                             <button id="moreBtn" onClick={this.handleMore}>More</button>
                             <div className="popUpForm" id="modalMore">
                                 <div className="modal-content">
-
+                                    <form onSubmit={this.addMore}>
+                                        <label>Comments: </label>
+                                        <textarea
+                                            value={this.state.comments}
+                                            id="comments"
+                                            placeholder="enter comments"
+                                            onChange={event => this.setState({ comments: event.target.value })}
+                                        ></textarea><br></br>
+                                        <input type="submit" value="Add" />
+                                    </form>
+                                    <form>
+                                        <label>Blocked:</label>
+                                        <input type="submit" value="Block" onClick={this.blocked} />
+                                    </form>
                                     <span className="close" onClick={this.close}>&times;</span>
-
                                 </div>
                             </div>
 
@@ -196,6 +295,8 @@ class Task extends Component {
 
                 Assigned to: {this.props.assignedTo}
 
+                <i className="complexity">{this.props.complexity}</i>
+
 
                 <div>
 
@@ -203,11 +304,19 @@ class Task extends Component {
                         <button id="moreBtn" onClick={this.handleMore}>More</button>
                         <div className="popUpForm" id="modalMore">
                             <div className="modal-content">
-                            <label>Comments: </label>
-                            <textarea
-                            placeholder = "enter comments"
-                            ></textarea>
-
+                                <form onSubmit={this.addMore}>
+                                    <label>Comments: </label>
+                                    <textarea
+                                        value={this.state.comments}
+                                        id="comments"
+                                        placeholder="enter comments"
+                                        onChange={event => this.setState({ comments: event.target.value })}
+                                    ></textarea>
+                                </form>
+                                <form>
+                                    <label>Blocked:</label>
+                                    <input type="submit" value="Block" onClick={this.blocked} />
+                                </form>
                                 <span className="close" onClick={this.close}>&times;</span>
                             </div>
                         </div>
