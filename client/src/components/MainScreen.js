@@ -19,8 +19,12 @@ class MainScreen extends Component {
             type: "TODO",
             assignedTo: 'Mark',
             project: 'myProject',
-            createdAt: new Date,
-            selectedProject: 'myProject'
+            createdAt: new Date(),
+            selectedProject: 'myProject',
+            comments: '',
+            complexity: 3,
+            filteredAssignee: '',
+            isBlocked: false
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleCreate = this.handleCreate.bind(this)
@@ -36,81 +40,64 @@ class MainScreen extends Component {
         this.projectSelect = this.projectSelect.bind(this)
         this.toggleProject = this.toggleProject.bind(this)
         this.change = this.change.bind(this)
+        this.getTasks = this.getTasks.bind(this)
+        
     }
 
+
+    getTasks() {
+
+        let project = {
+            "project": this.state.selectedProject
+        } 
+        
+            fetch('/api/getTasks', {
+                method: 'put',
+                body: JSON.stringify(project),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.json()
+    
+                    }
+    
+                    return Promise.reject("Invalid Note");
+                })
+                .then(task => {
+                    let tasksToDo = []
+                    let tasksDoing = []
+                    let tasksDone = []
+                    for (let i = 0; i < task.length; i++) {
+                    
+                        if (task[i].type === "TODO") {
+                            tasksToDo.push(task[i])
+                        }
+                        if (task[i].type === "DOING") {
+                            tasksDoing.push(task[i])
+                        }
+                        if (task[i].type === "DONE") {
+                            tasksDone.push(task[i])
+                        }
+                    }
+                    // }
+                    this.setState({
+                        tasks: tasksToDo,
+                        tasksDoing: tasksDoing,
+                        tasksDone: tasksDone
+                    })
+                })
+
+    }
     change(event) {
         event.preventDefault()
         console.log(this.state.selectedProject)
 
-        if(this.state.selectedProject == "myProject") {
-            fetch('/api/getTasks', {
-                method: 'get',
+        this.getTasks()
 
-            })
-                .then(function (response) {
-                    return response.json()
-                })
-                .then(task => {
-                    let tasksToDo = []
-                    let tasksDoing = []
-                    let tasksDone = []
-                    for (let i = 0; i < task.length; i++) {
-                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
-                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
-                        if (task[i].type === "TODO") {
-                            tasksToDo.push(task[i])
-                        }
-                        if (task[i].type === "DOING") {
-                            tasksDoing.push(task[i])
-                        }
-                        if (task[i].type === "DONE") {
-                            tasksDone.push(task[i])
-                        }
-                    }
-                    // }
-                    this.setState({
-                        tasks: tasksToDo,
-                        tasksDoing: tasksDoing,
-                        tasksDone: tasksDone
-                    })
-                })
-        
 
-         } else {
-             console.log(2)
-             fetch('/api/getTasksSecond', {
-                method: 'get',
-
-            })
-                .then(function (response) {
-                    return response.json()
-                })
-                .then(task => {
-                    let tasksToDo = []
-                    let tasksDoing = []
-                    let tasksDone = []
-                    for (let i = 0; i < task.length; i++) {
-                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
-                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
-                        if (task[i].type === "TODO") {
-                            tasksToDo.push(task[i])
-                        }
-                        if (task[i].type === "DOING") {
-                            tasksDoing.push(task[i])
-                        }
-                        if (task[i].type === "DONE") {
-                            tasksDone.push(task[i])
-                        }
-                    }
-                    // }
-                    this.setState({
-                        tasks: tasksToDo,
-                        tasksDoing: tasksDoing,
-                        tasksDone: tasksDone
-                    })
-                })
-        
-         }
     }
 
     handleCreate() {
@@ -141,9 +128,7 @@ class MainScreen extends Component {
         this.setState({
             selectedProject: event.target.value
         })
-         console.log(this.state.selectedProject)
 
-         
     }
 
     handleSubmit(ev) {
@@ -168,7 +153,9 @@ class MainScreen extends Component {
             "type": this.state.type,
             "assignedTo": this.state.assignedTo,
             "project": this.state.project,
-            "createdAt": this.state.createdAt
+            "createdAt": this.state.createdAt,
+            "comments": this.state.comments,
+            "complexity": this.state.complexity
         }
 
 
@@ -190,74 +177,11 @@ class MainScreen extends Component {
                 return Promise.reject("Invalid Note");
             })
 
-        // if (this.state.selectedProject == "myProject") {
-            // fetch('/api/getTasks', {
-            //     method: 'get',
 
-            // })
-            //     .then(function (response) {
-            //         return response.json()
-            //     })
-            //     .then(task => {
-            //         let tasksToDo = []
-            //         let tasksDoing = []
-            //         let tasksDone = []
-            //         for (let i = 0; i < task.length; i++) {
-            //             // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
-            //             // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
-            //             if (task[i].type === "TODO") {
-            //                 tasksToDo.push(task[i])
-            //             }
-            //             if (task[i].type === "DOING") {
-            //                 tasksDoing.push(task[i])
-            //             }
-            //             if (task[i].type === "DONE") {
-            //                 tasksDone.push(task[i])
-            //             }
-            //         }
-            //         // }
-            //         this.setState({
-            //             tasks: tasksToDo,
-            //             tasksDoing: tasksDoing,
-            //             tasksDone: tasksDone
-            //         })
-            //     })
+        this.getTasks()
+    }
 
-            fetch('/api/getTasksSecond', {
-                method: 'get',
 
-            })
-                .then(function (response) {
-                    return response.json()
-                })
-                .then(task => {
-                    let tasksToDo = []
-                    let tasksDoing = []
-                    let tasksDone = []
-                    for (let i = 0; i < task.length; i++) {
-                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
-                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
-                        if (task[i].type === "TODO") {
-                            tasksToDo.push(task[i])
-                        }
-                        if (task[i].type === "DOING") {
-                            tasksDoing.push(task[i])
-                        }
-                        if (task[i].type === "DONE") {
-                            tasksDone.push(task[i])
-                        }
-                    }
-                    // }
-                    this.setState({
-                        tasks: tasksToDo,
-                        tasksDoing: tasksDoing,
-                        tasksDone: tasksDone
-                    })
-                })
-        
-         }
-        
-     
 
     componentDidMount() {
 
@@ -280,105 +204,8 @@ class MainScreen extends Component {
                 }
             })
 
-        //     if()
 
-        // fetch('/api/getTasks', {
-        //     method: 'get',
-
-        // })
-        //     .then(function (response) {
-        //         return response.json()
-        //     })
-        //     .then(task => {
-        //         let tasksToDo = []
-        //         let tasksDoing = []
-        //         let tasksDone = []
-        //         for (let i = 0; i < task.length; i++) {
-        //             if (task[i].type === "TODO") {
-        //                 tasksToDo.push(task[i])
-        //             }
-        //             if (task[i].type === "DOING") {
-        //                 tasksDoing.push(task[i])
-        //             }
-        //             if (task[i].type === "DONE") {
-        //                 tasksDone.push(task[i])
-        //             }
-        //         }
-        //         this.setState({
-        //             tasks: tasksToDo,
-        //             tasksDoing: tasksDoing,
-        //             tasksDone: tasksDone
-        //         })
-        //     })
-        if(this.state.selectedProject == "myProject") {
-            fetch('/api/getTasks', {
-                method: 'get',
-
-            })
-                .then(function (response) {
-                    return response.json()
-                })
-                .then(task => {
-                    let tasksToDo = []
-                    let tasksDoing = []
-                    let tasksDone = []
-                    for (let i = 0; i < task.length; i++) {
-                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
-                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
-                        if (task[i].type === "TODO") {
-                            tasksToDo.push(task[i])
-                        }
-                        if (task[i].type === "DOING") {
-                            tasksDoing.push(task[i])
-                        }
-                        if (task[i].type === "DONE") {
-                            tasksDone.push(task[i])
-                        }
-                    }
-                    // }
-                    this.setState({
-                        tasks: tasksToDo,
-                        tasksDoing: tasksDoing,
-                        tasksDone: tasksDone
-                    })
-                })
-        
-
-         } else {
-             console.log(2)
-             fetch('/api/getTasksSecond', {
-                method: 'get',
-
-            })
-                .then(function (response) {
-                    return response.json()
-                })
-                .then(task => {
-                    let tasksToDo = []
-                    let tasksDoing = []
-                    let tasksDone = []
-                    for (let i = 0; i < task.length; i++) {
-                        // if ((task[i].project === "myProject") && (this.state.selectedProject === "myProject")) {
-                        // if(this.state.selectedProject == "myProject" && task[i].project == "myProject"){
-                        if (task[i].type === "TODO") {
-                            tasksToDo.push(task[i])
-                        }
-                        if (task[i].type === "DOING") {
-                            tasksDoing.push(task[i])
-                        }
-                        if (task[i].type === "DONE") {
-                            tasksDone.push(task[i])
-                        }
-                    }
-                    // }
-                    this.setState({
-                        tasks: tasksToDo,
-                        tasksDoing: tasksDoing,
-                        tasksDone: tasksDone
-                    })
-                })
-        
-         }
+        this.getTasks()
 
 
     }
@@ -481,35 +308,7 @@ class MainScreen extends Component {
             tasksDoing: array,
             tasksDone: newArray
         })
-
-        fetch('/api/getTasks', {
-            method: 'get',
-
-        })
-            .then(function (response) {
-                return response.json()
-            })
-            .then(task => {
-                let tasksToDo = []
-                let tasksDoing = []
-                let tasksDone = []
-                for (let i = 0; i < task.length; i++) {
-                    if (task[i].type === "TODO") {
-                        tasksToDo.push(task[i])
-                    }
-                    if (task[i].type === "DOING") {
-                        tasksDoing.push(task[i])
-                    }
-                    if (task[i].type === "DONE") {
-                        tasksDone.push(task[i])
-                    }
-                }
-                this.setState({
-                    tasks: tasksToDo,
-                    tasksDoing: tasksDoing,
-                    tasksDone: tasksDone
-                })
-            })
+        this.getTasks()
     }
 
     allowDropDone(ev) {
@@ -531,12 +330,33 @@ class MainScreen extends Component {
     render() {
         return (
             <div className="entirePage">
+
+                <div className="projectSelect" onSubmit={this.change}>
+                    <form>
+                        <label className="selectLabel">Select a project:</label><br></br>
+                        <select value={this.state.selectedProject} onChange={this.toggleProject}>
+                            <option disabled>Please select a project</option>
+                            <option value="myProject">My Project</option>
+                            <option value="mySecondProject">My Second Project</option>
+                        </select>
+                        <label className="selectLabel">Filter by assignee</label><br></br>
+                        <select value={this.state.filteredAssignee} onChange={event => this.setState({ filteredAssignee: event.target.value })}>
+                            <option disabled> Select someone</option>
+                            <option value="Mike">Mike</option>
+                            <option value="Tim">Tim</option>
+                            <option value="John">John</option>
+                        </select>
+                        <input type="submit" value="Change Project" />
+                    </form>
+                </div><br></br>
+
+
                 <div className="createTaskDiv">
                     <button id="myCreateBtn" onClick={this.handleCreate}>Create Task</button>
                     <div className="popUpForm" id="modal">
                         <div className="modal-content">
                             <span className="close" onClick={this.close}>&times;</span>
-                            <form onSubmit={this.handleSubmit}>
+                            <form className="createTaskForm" onSubmit={this.handleSubmit}>
                                 <label htmlFor="myProject"> Project name: </label>
                                 <select value={this.state.project} onChange={this.projectSelect}>
                                     <option value="myProject">My Project</option>
@@ -562,6 +382,14 @@ class MainScreen extends Component {
                                     <option value="DOING">Doing</option>
                                     <option value="DONE">Done</option>
                                 </select><br></br>
+                                <label>Level of complexity: </label>
+                                <input
+                                    value={this.state.complexity}
+                                    id="taskComplexity"
+                                    placeholder="1 to 5"
+                                    type="number"
+                                    onChange={event => this.setState({ complexity: event.target.value })}
+                                ></input><br></br>
                                 <label>Assign to: </label>
                                 <select value={this.state.assignedTo} onChange={this.assign}>
                                     <option disabled> Select someone</option>
@@ -570,23 +398,12 @@ class MainScreen extends Component {
                                     <option value="John">John</option>
                                 </select><br></br>
 
-                                <input type="submit" value="Submit" />
+                                <input type="submit" className="submitCreateBtn" value="Submit" />
                             </form>
                         </div>
                     </div>
                 </div>
 
-                <div className="projectSelect" onSubmit={this.change}>
-                <form>
-                    <label className="selectLabel">Select a project:</label>
-                    <select value={this.state.selectedProject} onChange={this.toggleProject}>
-                    <option disabled>Please select a project</option>
-                        <option value="myProject">My Project</option>
-                        <option value="mySecondProject">My Second Project</option>
-                    </select><br></br>
-                    <input type="submit" value="Change Project" />
-                    </form>
-                </div>
 
                 <div className="container">
 
@@ -603,6 +420,8 @@ class MainScreen extends Component {
                                     title={task.task}
                                     description={task.description}
                                     assignedTo={task.assignedTo}
+                                    complexity={task.complexity}
+                                    isBlocked={task.isBlocked}
                                 />
                             </div>)
 
@@ -622,6 +441,8 @@ class MainScreen extends Component {
                                     title={task.task}
                                     description={task.description}
                                     assignedTo={task.assignedTo}
+                                    complexity={task.complexity}
+                                    isBlocked={task.isBlocked}
                                 />
                             </div>
                         ))}
@@ -643,6 +464,8 @@ class MainScreen extends Component {
                                     title={task.task}
                                     description={task.description}
                                     assignedTo={task.assignedTo}
+                                    complexity={task.complexity}
+                                    isBlocked={task.isBlocked}
                                 />
                             </div>
                         ))}

@@ -40,7 +40,7 @@ class Login extends React.Component {
   })
   .then(user => {
     for (let i = 0; i <user.length; i++) {
-      if (user[i].userEmail == this.state.email && user[i].password == this.state.password) {
+      if (user[i].userEmail === this.state.email && user[i].password === this.state.password) {
         this.setState({ currentUser: this.state.email})
           AuthService.authenticate(() => {
             this.setState({ redirectToPreviousRoute: true });
@@ -48,7 +48,7 @@ class Login extends React.Component {
       }
       else {
         console.log("wrong")
-        
+
       }
     }
   })
@@ -150,6 +150,8 @@ class App extends Component {
 
             <Route path='/home' component={Public} />
             <Route path="/login" component={Login} />
+            {/* <Route path="/login" component={() => <Login currentUser={this.props.currentUser} />} */}
+            
             <SecretRoute path='/private' component={Task} />
           </div>
         </Router>
